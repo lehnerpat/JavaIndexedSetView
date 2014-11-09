@@ -4,14 +4,30 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
 public class IndexedSetViewTest {
 
+	@Test(expected = NullPointerException.class)
+	public void testConstructorNPE() {
+		new IndexedSetView<Object>(null);
+	}
+
 	@Test
-	public void testEqualsAndHashCode() throws Exception {
+	public void testConstructor() {
+		final IndexedSetView<Object> emptyIdxSet = new IndexedSetView<>(new ArrayList<>());
+		assertEquals(0, emptyIdxSet.getSize());
+
+		final HashSet<Integer> intSet = new HashSet<>(Arrays.asList(5,3,4));
+		final IndexedSetView<Integer> intIdxSet = new IndexedSetView<>(intSet);
+		assertEquals(intSet.size(), intIdxSet.getSize());
+	}
+
+	@Test
+	public void testEqualsAndHashCode() {
 		final List<String> l1 = Arrays.asList("a", "b", "c");
 		final List<String> l2 = new ArrayList<>();
 		l2.add("a");
