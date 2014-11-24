@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
@@ -13,7 +14,7 @@ public class IndexedSetViewTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testConstructorNPE() {
-		new IndexedSetView<Object>(null);
+		new IndexedSetView<Object>((Collection <Object>)null);
 	}
 
 	@Test

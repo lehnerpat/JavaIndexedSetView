@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -42,6 +43,8 @@ public class IndexedSetView<T> implements Iterable<T> {
 
 	private final int size;
 
+	private Random rng;
+
 	/**
 	 * Create a new indexed set view of the given collection. The collection may include duplicates, which will be trimmed (the collection is
 	 * first passed into a Set implementation of the Java standard library to do this, and then converted to a list to derive an index for each
@@ -52,6 +55,12 @@ public class IndexedSetView<T> implements Iterable<T> {
 	 *            the collection of items to be included in this indexed set
 	 */
 	public IndexedSetView(final Collection<T> items) {
+		this(items, Random.class);
+	}
+
+	public IndexedSetView(final Collection<T> items, final Class<? extends Random> randomClass) {
+		this.setRandomClass(randomClass);
+
 		this.itemSet = Collections.unmodifiableSet(new HashSet<>(items));
 		this.size = itemSet.size();
 		this.itemList = Collections.unmodifiableList(new ArrayList<>(this.itemSet));
@@ -71,9 +80,15 @@ public class IndexedSetView<T> implements Iterable<T> {
 	 *            the original set to be cloned
 	 */
 	public IndexedSetView(final IndexedSetView<? extends T> otherSet) {
+		this(otherSet, otherSet.getRandomClass());
+	}
+
+	public IndexedSetView(final IndexedSetView<? extends T> otherSet, final Class<? extends Random> randomClass) {
 		assert otherSet.itemSet.size() == otherSet.size;
 		assert otherSet.itemList.size() == otherSet.size;
 		assert otherSet.itemMap.size() == otherSet.size;
+
+		this.setRandomClass(randomClass);
 
 		this.size = otherSet.size;
 		this.itemSet = Collections.unmodifiableSet(new HashSet<>(otherSet.itemSet));
@@ -84,7 +99,7 @@ public class IndexedSetView<T> implements Iterable<T> {
 	/**
 	 * Get an iterator over the items in this indexed set, in the order of increasing indices
 	 * 
-	 * @return
+	 * @return a new iterator over the items in this indexed set
 	 */
 	@Override
 	public Iterator<T> iterator() {
@@ -246,6 +261,34 @@ public class IndexedSetView<T> implements Iterable<T> {
 	 */
 	public BitSet getSingleBitSet(final T element) {
 		return this.getSingleBitSet(this.getIndexEx(element));
+	}
+
+	public int getRandomIndex(Random rng) {
+		return rng.nextInt(this.size);
+	}
+
+	public int getRandomIndex() {
+		return this.getRandomIndex(this.rng);
+	}
+
+	public T getRandomElement(Random rng) {
+		return this.itemList.get(this.getRandomIndex(rng));
+	}
+
+	public T getRandomElement() {
+		return this.itemList.get(this.getRandomIndex());
+	}
+
+	public Class<? extends Random> getRandomClass() {
+		return this.rng.getClass();
+	}
+
+	public void setRandomClass(final Class<? extends Random> randomClass) {
+		try {
+			this.rng = randomClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
