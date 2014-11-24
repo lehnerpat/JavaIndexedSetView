@@ -98,7 +98,10 @@ public class IndexedSetView<T> implements Iterable<T> {
 	 * 
 	 * @return
 	 */
+	@SuppressWarnings("unchecked")
 	public T[] asArray() {
+		// have to use explicit cast because we cannot use the alternative signature of toArray(T[]), as you cannot instantiate an array of a
+		// type parameter (not even an empty array)
 		return (T[]) this.itemList.toArray();
 	}
 
@@ -260,6 +263,7 @@ public class IndexedSetView<T> implements Iterable<T> {
 			return false;
 		}
 
+		@SuppressWarnings("rawtypes")
 		final IndexedSetView that = (IndexedSetView) o;
 		return itemList.equals(that.itemList);
 	}
