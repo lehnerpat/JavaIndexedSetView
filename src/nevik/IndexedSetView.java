@@ -62,6 +62,24 @@ public class IndexedSetView<T> implements Iterable<T> {
 		this.itemMap = Collections.unmodifiableMap(map);
 	}
 
+	/**
+	 * Create a shallow clone of the given indexed set. The internal datastructures pertaining to the indexed set view of the contained item set
+	 * are copied and then independent of <b>otherSet</b>. However, the items within <b>otherSet</b> are not cloned themselves. The order of
+	 * items in this set will be the same as in <b>otherSet</b>.
+	 * 
+	 * @param otherSet
+	 *            the original set to be cloned
+	 */
+	public IndexedSetView(final IndexedSetView<? extends T> otherSet) {
+		assert otherSet.itemSet.size() == otherSet.size;
+		assert otherSet.itemList.size() == otherSet.size;
+		assert otherSet.itemMap.size() == otherSet.size;
+
+		this.size = otherSet.size;
+		this.itemSet = Collections.unmodifiableSet(new HashSet<>(otherSet.itemSet));
+		this.itemList = Collections.unmodifiableList(new ArrayList<>(otherSet.itemList));
+		this.itemMap = Collections.unmodifiableMap(new HashMap<>(otherSet.itemMap));
+	}
 
 	/**
 	 * Get an iterator over the items in this indexed set, in the order of increasing indices
